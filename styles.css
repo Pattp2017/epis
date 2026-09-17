@@ -1,0 +1,2296 @@
+:root {
+  --bg:#f4f7fb;
+  --panel:#ffffff;
+  --ink:#172033;
+  --muted:#6b7280;
+  --line:#dfe5ee;
+  --brand:#173f73;
+  --brand2:#245a9a;
+  --ok:#1f7a45;
+  --warn:#a66700;
+  --danger:#b42318;
+  --soft:#edf3fa;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select{font:inherit}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:#0f2745;color:white;padding:22px 16px;position:sticky;top:0;height:100vh}
+.brand{font-weight:800;font-size:20px;margin-bottom:6px}
+.brand small{display:block;color:#bfd0e6;font-size:12px;font-weight:500;margin-top:4px}
+.nav{margin-top:28px;display:grid;gap:7px}
+.nav button{border:0;background:transparent;color:#dbe7f5;text-align:left;padding:12px 14px;border-radius:10px;cursor:pointer;width:100%}
+.nav button.active,.nav button:hover{background:#1d4778;color:white}
+.nav-group{display:grid;gap:4px}
+.nav-parent{display:flex;justify-content:space-between;align-items:center;font-weight:800}
+.nav-parent .arrow{font-size:12px;transition:transform .18s ease}
+.nav-group.open .nav-parent .arrow{transform:rotate(90deg)}
+.nav-children{display:none;gap:4px;padding-left:12px}
+.nav-group.open .nav-children{display:grid}
+.nav-child{font-size:13px;padding:10px 12px;border-left:2px solid #31577f;border-radius:0 9px 9px 0}
+.nav-soon{opacity:.48;cursor:default}
+.content{padding:26px;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:20px}
+.topbar h1{margin:0;font-size:25px}
+.topbar p{margin:5px 0 0;color:var(--muted);font-size:14px}
+.client{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--line);padding:9px 11px;border-radius:10px}
+.client input{border:0;outline:0;width:210px;font-weight:600}
+.page{display:none}
+.page.active{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 3px 14px rgba(23,32,51,.04)}
+.toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
+.field{display:grid;gap:6px;min-width:180px}
+.field label{font-size:12px;font-weight:700;color:#4b5563}
+input,select{border:1px solid #cfd8e5;border-radius:9px;padding:10px 11px;background:white;outline:none}
+input:focus,select:focus{border-color:#6d97c7;box-shadow:0 0 0 3px #dceaf9}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--brand);color:white}
+.btn-primary:hover{background:var(--brand2)}
+.btn-light{background:#edf2f7;color:#24364e}
+.btn-danger{background:#fff0ee;color:var(--danger)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:15px}
+.stat b{font-size:24px;display:block;margin-top:5px}
+.stat span{font-size:12px;color:var(--muted);font-weight:700}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:12px 11px;border-bottom:1px solid #e8edf3;text-align:left;font-size:14px}
+th{background:#f7f9fc;color:#4b5563;font-size:12px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.badge-epi{background:#e8f1ff;color:#174e8a}
+.badge-uniforme{background:#eef8ef;color:#2f6c39}
+.badge-pessoal{background:#fff4df;color:#8d5a00}
+.muted{color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.actions{display:flex;gap:6px}
+.link-like{border:0;background:transparent;padding:0;color:#173f73;cursor:pointer;text-align:left;font:inherit}
+.link-like:hover{text-decoration:underline}
+.icon-btn{border:0;background:#f3f6fa;border-radius:8px;padding:7px 9px;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.callout{border-left:4px solid var(--brand);background:#eef5fc;padding:13px 14px;border-radius:8px;margin-bottom:16px;color:#30445d}
+.modal-backdrop{position:fixed;inset:0;background:rgba(10,22,38,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal-backdrop.open{display:flex}
+.modal{width:min(720px,100%);background:white;border-radius:14px;padding:20px;box-shadow:0 25px 80px rgba(0,0,0,.22)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.modal-head h3{margin:0}
+.close{border:0;background:#eef2f7;border-radius:8px;padding:6px 10px;cursor:pointer}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-title h2{margin:0;font-size:19px}
+
+.stock-zero{background:#fff7f6}
+.stock-low{background:#fffbea}
+.stock-ok{background:#f7fcf9}
+@media print{
+  body{background:white}
+  .sidebar,.topbar,.no-print{display:none!important}
+  .app{display:block}
+  .content{padding:0}
+  .page{display:none!important}
+  #estoque.page.active{display:block!important}
+  #estoque .card{border:0;box-shadow:none;padding:0}
+  #estoque .stats{margin-bottom:16px}
+  #estoque .table-wrap{overflow:visible;border:0}
+  #estoque table{min-width:0}
+  #estoque th{position:static;background:#f0f0f0!important;color:#000!important}
+}
+
+
+.print-report-head{display:none}
+@media print{
+  @page{size:A4 portrait;margin:14mm 12mm 15mm}
+
+  html,body{background:#fff!important;color:#111!important;font-size:10pt}
+  .sidebar,.topbar,.no-print{display:none!important}
+  .app{display:block!important}
+  .content{padding:0!important;margin:0!important}
+  .page{display:none!important}
+  #estoque.page.active{display:block!important}
+
+  #estoque>.section-title,
+  #estoque>.stats,
+  #estoque .callout{display:none!important}
+
+  .print-report-head{
+    display:block!important;
+    border-bottom:2px solid #173f70;
+    padding:0 0 8px;
+    margin:0 0 12px;
+  }
+  .print-brand{
+    font-size:10pt;
+    font-weight:800;
+    letter-spacing:.4px;
+    margin-bottom:5px;
+  }
+  .print-title{
+    font-size:17pt;
+    font-weight:900;
+    letter-spacing:.3px;
+    margin-bottom:8px;
+  }
+  .print-meta{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    font-size:9pt;
+    margin-bottom:8px;
+  }
+  .print-summary{
+    border-top:1px solid #bbb;
+    padding-top:7px;
+    font-size:9pt;
+    font-weight:700;
+  }
+
+  #estoque .card{
+    border:0!important;
+    box-shadow:none!important;
+    padding:0!important;
+    margin:0!important;
+    background:#fff!important;
+  }
+  #estoque .table-wrap{
+    overflow:visible!important;
+    border:1px solid #aaa!important;
+    border-radius:0!important;
+  }
+  #estoque table{
+    width:100%!important;
+    min-width:0!important;
+    border-collapse:collapse!important;
+    table-layout:auto!important;
+  }
+  #estoque thead{display:table-header-group}
+  #estoque tr{break-inside:avoid}
+  #estoque th{
+    position:static!important;
+    background:#e9edf2!important;
+    color:#111!important;
+    font-size:8.5pt!important;
+    padding:7px 6px!important;
+    border-bottom:1px solid #999!important;
+    text-align:left!important;
+  }
+  #estoque td{
+    font-size:8.5pt!important;
+    padding:7px 6px!important;
+    border-bottom:1px solid #ccc!important;
+    background:#fff!important;
+  }
+  #estoque th:nth-child(n+4),
+  #estoque td:nth-child(n+4){text-align:center!important}
+  #estoque th:nth-child(1){width:43%}
+  #estoque th:nth-child(2){width:13%}
+  #estoque th:nth-child(3){width:12%}
+  #estoque th:nth-child(4),
+  #estoque th:nth-child(5),
+  #estoque th:nth-child(6){width:10.5%}
+  #estoque td:last-child{font-weight:900!important}
+}
+
+
+.doc-preview{display:grid;gap:14px}
+.doc-sheet{
+  background:white;border:1px solid #d7dee8;border-radius:12px;
+  padding:22px;min-height:360px
+}
+.doc-head{border-bottom:2px solid #173f73;padding-bottom:10px;margin-bottom:14px}
+.doc-head h2{margin:0 0 6px;font-size:18px}
+.doc-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;font-size:13px}
+.signature-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:48px}
+.signature{border-top:1px solid #444;text-align:center;padding-top:5px;font-size:12px}
+.print-doc-area{display:none}
+
+@media print{
+  body.printing-docs .sidebar,
+  body.printing-docs .topbar,
+  body.printing-docs .page{display:none!important}
+  body.printing-docs .print-doc-area{display:block!important}
+  body.printing-docs .app{display:block!important}
+  body.printing-docs .content{padding:0!important}
+  body.printing-docs .print-doc-area .doc-sheet{
+    border:0!important;border-radius:0!important;box-shadow:none!important;
+    padding:0!important;min-height:0!important;break-after:page
+  }
+  body.printing-docs .print-doc-area .doc-sheet:last-child{break-after:auto}
+  body.printing-docs .doc-head h2{font-size:15pt}
+  body.printing-docs table{min-width:0!important;width:100%!important}
+  body.printing-docs th, body.printing-docs td{font-size:8.5pt!important;padding:6px!important}
+}
+
+
+.doc-cover-brand,.doc-epi-brand{
+  text-align:center;font-weight:900;color:#062b5c;letter-spacing:1px;font-size:28px
+}
+.doc-cover-sub{text-align:center;font-weight:800;color:#173f73;margin-top:5px}
+.doc-cover-title{
+  text-align:center;color:#062b5c;font-weight:950;font-size:40px;line-height:1.05;
+  margin:55px 0 16px
+}
+.doc-cover-rule{height:4px;background:#eeb000;width:52%;margin:0 auto 28px;border-radius:4px}
+.doc-cover-text{max-width:620px;margin:0 auto;text-align:center;line-height:1.55;font-size:15px}
+.doc-important{
+  max-width:520px;margin:30px auto;border:2px solid #173f73;border-radius:12px;
+  padding:14px 18px;line-height:1.5
+}
+.doc-worker{border:2px solid #173f73;border-radius:14px;padding:16px;display:grid;gap:11px}
+.doc-worker-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.doc-worker hr{border:0;border-top:1px solid #173f73;width:100%;margin:0}
+.doc-training{text-align:center;line-height:1.45;margin-top:22px}
+.doc-training>b{color:#062b5c;font-size:18px}
+.doc-epi-title{text-align:center;color:#062b5c;font-weight:950;font-size:34px;line-height:1;margin:22px 0 8px}
+.doc-epi-sub{text-align:center;margin-bottom:24px}
+.doc-epi-info{
+  border:2px solid #173f73;border-radius:10px;padding:14px;
+  display:grid;grid-template-columns:1.3fr 1fr;gap:20px;margin-bottom:12px
+}
+.doc-recommend{border:2px solid #173f73;border-radius:10px;padding:14px;min-height:85px;margin-bottom:18px}
+.doc-register-title{
+  display:inline-block;background:#062b5c;color:white;font-weight:900;
+  padding:10px 18px;border-radius:9px 9px 0 0
+}
+.doc-declaration{
+  border:2px solid #173f73;border-bottom:0;padding:10px 14px;text-align:center;
+  font-size:12px;line-height:1.4
+}
+.doc-table{width:100%;border-collapse:collapse}
+.doc-table th{background:#062b5c;color:white;padding:8px;border:1px solid #9eabc0}
+.doc-table td{height:34px;border:1px solid #9eabc0;padding:6px}
+.doc-reasons{
+  margin:18px auto 0;border:2px solid #173f73;border-radius:9px;padding:9px 14px;
+  display:flex;justify-content:space-around;gap:12px;font-size:12px
+}
+.doc-reasons span b{color:#d7261e;font-size:16px;margin-right:4px}
+
+@media print{
+  body.printing-docs .doc-sheet{
+    width:auto!important;min-height:267mm!important;box-sizing:border-box!important;
+    padding:10mm!important
+  }
+  body.printing-docs .doc-cover-title{margin-top:28mm!important}
+  body.printing-docs .doc-cover-brand,
+  body.printing-docs .doc-epi-brand{font-size:22pt!important}
+  body.printing-docs .doc-cover-title{font-size:31pt!important}
+  body.printing-docs .doc-epi-title{font-size:25pt!important}
+  body.printing-docs .doc-table td{height:8mm!important}
+}
+
+
+.doc-table .doc-empty-row td{height:36px}
+@media print{
+  body.printing-docs .doc-table .doc-empty-row td{height:4.7mm!important}
+  body.printing-docs .ficha-epi .doc-recommend{min-height:18mm!important}
+}
+
+
+@media print{
+  body.printing-docs .ficha-epi{
+    min-height:0!important;
+    height:267mm!important;
+    max-height:267mm!important;
+    overflow:hidden!important;
+    break-inside:avoid-page!important;
+    page-break-inside:avoid!important;
+  }
+  body.printing-docs .ficha-epi .doc-epi-title{margin:8px 0 4px!important}
+  body.printing-docs .ficha-epi .doc-epi-sub{margin-bottom:10px!important}
+  body.printing-docs .ficha-epi .doc-epi-info{padding:8px!important;margin-bottom:7px!important}
+  body.printing-docs .ficha-epi .doc-recommend{padding:8px!important;margin-bottom:9px!important}
+  body.printing-docs .ficha-epi .doc-register-title{padding:6px 12px!important}
+  body.printing-docs .ficha-epi .doc-declaration{padding:6px 10px!important;font-size:8pt!important}
+  body.printing-docs .ficha-epi .doc-table th{padding:5px!important}
+  body.printing-docs .ficha-epi .doc-table td{padding:2px 4px!important;height:4.7mm!important}
+  body.printing-docs .ficha-epi .doc-reasons{
+    margin-top:8px!important;
+    padding:6px 10px!important;
+  }
+}
+
+
+.doc-footer{
+  margin-top:10px;
+  font-size:10px;
+  color:#173f73;
+}
+.doc-footer-line{
+  height:2px;
+  background:#173f73;
+  margin-bottom:8px;
+}
+.doc-footer-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-bottom:6px;
+}
+.doc-footer-contact{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  font-size:9px;
+}
+@media print{
+  body.printing-docs .ficha-epi{
+    position:relative!important;
+    padding-bottom:28mm!important;
+  }
+  body.printing-docs .ficha-epi .doc-footer{
+    position:absolute!important;
+    left:10mm!important;
+    right:10mm!important;
+    bottom:8mm!important;
+    margin:0!important;
+    font-size:7.5pt!important;
+  }
+  body.printing-docs .ficha-epi .doc-footer-contact{
+    font-size:7pt!important;
+  }
+}
+
+
+@media print{
+  body.printing-docs .app{display:none!important}
+  body.printing-docs .print-doc-area{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+  }
+}
+
+
+@media print{
+  body.printing-docs .ficha-epi .doc-epi-title{margin:4px 0 2px!important}
+  body.printing-docs .ficha-epi .doc-epi-sub{margin-bottom:6px!important}
+  body.printing-docs .ficha-epi .doc-epi-info{padding:6px!important;margin-bottom:5px!important}
+  body.printing-docs .ficha-epi .doc-recommend{padding:6px!important;margin-bottom:6px!important;min-height:14mm!important}
+  body.printing-docs .ficha-epi .doc-register-title{padding:4px 10px!important}
+  body.printing-docs .ficha-epi .doc-declaration{padding:4px 8px!important}
+  body.printing-docs .ficha-epi .doc-reasons{margin-top:5px!important;padding:5px 8px!important}
+}
+
+
+/* ===== V25: artes originais como base visual ===== */
+.art-page{
+  position:relative!important;
+  width:210mm!important;
+  height:297mm!important;
+  min-height:297mm!important;
+  max-height:297mm!important;
+  padding:0!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.art-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  z-index:0;
+  pointer-events:none;
+}
+.art-white{position:absolute;background:#fff;z-index:1}
+.art-cover-farm-mask{left:15%;top:1.5%;width:70%;height:8.3%}
+.art-form-farm-mask{left:15%;top:1.5%;width:70%;height:7.2%}
+.art-farm-name{
+  position:absolute;z-index:2;left:10%;width:80%;
+  text-align:center;color:#062b5c;font-weight:900;
+  font-size:27px;letter-spacing:.5px;line-height:1.05;
+}
+.art-cover .art-farm-name{top:2.35%}
+.art-form-farm{top:2.45%}
+
+.cover-field{
+  position:absolute;z-index:3;color:#111;font-size:14px;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cover-name{left:25.8%;top:65.55%;width:65%}
+.cover-role{left:14.2%;top:68.72%;width:76%}
+.cover-admission{left:22.8%;top:72.05%;width:20%}
+
+.form-field{
+  position:absolute;z-index:3;color:#111;font-size:13px;line-height:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.form-product{left:19.2%;top:23.55%;width:36%}
+.form-ca-ref{left:73.2%;top:23.55%;width:20%}
+
+/* Individual: cobre apenas a tabela original e redesenha 26 linhas em HTML */
+.individual-table-wrap{
+  position:absolute;z-index:4;left:3.85%;top:47.70%;width:92.3%;height:34.55%;
+  background:#fff;
+}
+.art-table{
+  width:100%;height:100%;border-collapse:collapse;table-layout:fixed;
+  font-size:7px;color:#111;background:#fff;
+}
+.art-table th{
+  background:#062b5c;color:#fff;border:1px solid #8798b0;
+  font-size:7px;font-weight:800;padding:2px 3px;text-align:center;
+}
+.art-table td{
+  border:1px solid #9aa8bb;padding:1px 3px;height:auto;vertical-align:middle;
+}
+.individual-table th:nth-child(1){width:16%}
+.individual-table th:nth-child(2){width:9%}
+.individual-table th:nth-child(3){width:12%}
+.individual-table th:nth-child(4){width:13%}
+.individual-table th:nth-child(5){width:50%}
+
+/* Coletiva: apaga miolo da ficha e usa toda a área para 34 linhas */
+.collective-center-mask{
+  left:3.1%;top:20.1%;width:93.8%;height:67.1%;background:#fff;
+}
+.collective-register-title{
+  position:absolute;z-index:4;left:5%;top:20.6%;
+  background:#062b5c;color:#fff;font-weight:900;font-size:12px;
+  padding:7px 14px;border-radius:8px 8px 0 0;
+}
+.collective-declaration{
+  position:absolute;z-index:4;left:3.85%;top:24.0%;width:92.3%;
+  border:1.5px solid #173f73;padding:6px 10px;text-align:center;
+  font-size:7px;line-height:1.25;background:#fff;
+}
+.collective-table-wrap{
+  position:absolute;z-index:4;left:3.85%;top:28.25%;width:92.3%;height:51.9%;
+  background:#fff;
+}
+.collective-table{font-size:6.5px}
+.collective-table th{font-size:6.5px;padding:2px}
+.collective-table th:nth-child(1){width:13%}
+.collective-table th:nth-child(2){width:7%}
+.collective-table th:nth-child(3){width:29%}
+.collective-table th:nth-child(4){width:10%}
+.collective-table th:nth-child(5){width:11%}
+.collective-table th:nth-child(6){width:30%}
+.collective-reasons{
+  position:absolute;z-index:4;left:10.2%;top:82.3%;width:79.6%;
+  height:4.0%;border:1.5px solid #173f73;border-radius:8px;
+  display:flex;align-items:center;justify-content:space-around;gap:6px;
+  padding:0 10px;background:#fff;font-size:7px;color:#111;
+}
+.collective-reasons span b{color:#e52520;font-size:10px;margin-right:3px}
+
+/* O fundo é IMG, portanto sai mesmo se "gráficos de plano de fundo" estiver desligado. */
+@media print{
+  @page{size:A4 portrait;margin:0}
+  body.printing-docs .app{display:none!important}
+  body.printing-docs .print-doc-area{
+    display:block!important;width:210mm!important;margin:0!important;padding:0!important;
+  }
+  body.printing-docs .art-page{
+    width:210mm!important;height:297mm!important;
+    min-height:297mm!important;max-height:297mm!important;
+    break-after:page!important;page-break-after:always!important;
+  }
+  body.printing-docs .art-page:last-child{
+    break-after:auto!important;page-break-after:auto!important;
+  }
+  body.printing-docs .art-table th,
+  body.printing-docs .art-table td{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+}
+
+
+/* ===== V26: integração da arte com os dados, sem redesenhar o individual ===== */
+
+/* CAPA: texto apoiado sobre as linhas da própria imagem */
+.cover-field{
+  font-size:13px!important;
+  line-height:1!important;
+  background:transparent!important;
+}
+
+/* INDIVIDUAL: usa integralmente a tabela desenhada na arte original */
+.individual-table-wrap{display:none!important}
+.individual-art-records{
+  position:absolute;
+  z-index:5;
+  left:3.82%;
+  top:50.52%;
+  width:92.0%;
+  height:30.15%;
+  pointer-events:none;
+}
+.individual-art-row{
+  position:absolute;
+  left:0;
+  top:calc(var(--row) * 9.0909%);
+  width:100%;
+  height:9.0909%;
+  display:grid;
+  grid-template-columns:16.55% 9.45% 12.95% 12.45% 48.60%;
+  align-items:center;
+  font-size:7px;
+  line-height:1;
+  color:#111;
+}
+.individual-art-row span{
+  padding:0 5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* COLETIVA: apaga somente descrição/recomendações/tabela original.
+   A moldura, cantos, legenda A/S/P/D e rodapé continuam sendo os da arte. */
+.collective-center-mask{
+  left:3.05%!important;
+  top:20.35%!important;
+  width:93.90%!important;
+  height:61.65%!important;
+  background:#fff!important;
+}
+.collective-register-title{
+  left:5.1%!important;
+  top:21.20%!important;
+  font-size:10px!important;
+  padding:6px 12px!important;
+}
+.collective-declaration{
+  left:3.85%!important;
+  top:24.15%!important;
+  width:92.30%!important;
+  box-sizing:border-box!important;
+  font-size:6.5px!important;
+  padding:5px 8px!important;
+  line-height:1.2!important;
+}
+.collective-table-wrap{
+  position:absolute!important;
+  z-index:5!important;
+  left:3.85%!important;
+  top:28.15%!important;
+  width:92.30%!important;
+  height:51.60%!important;
+  overflow:hidden!important;
+  background:#fff!important;
+}
+.collective-table{
+  width:100%!important;
+  height:100%!important;
+  table-layout:fixed!important;
+  border-collapse:collapse!important;
+  font-size:6px!important;
+  line-height:1!important;
+}
+.collective-table thead{height:4.1%!important}
+.collective-table tbody{height:95.9%!important}
+.collective-table tbody tr{
+  height:calc(95.9% / 34)!important;
+  max-height:calc(95.9% / 34)!important;
+}
+.collective-table th{
+  height:auto!important;
+  min-height:0!important;
+  padding:2px!important;
+  font-size:6px!important;
+}
+.collective-table td{
+  height:auto!important;
+  min-height:0!important;
+  padding:0 3px!important;
+  font-size:5.7px!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+}
+/* A legenda coletiva criada em HTML deixa de existir; usamos a da imagem */
+.collective-reasons{display:none!important}
+
+@media print{
+  body.printing-docs .individual-art-row{
+    font-size:6.5pt!important;
+  }
+  body.printing-docs .collective-table,
+  body.printing-docs .collective-table th,
+  body.printing-docs .collective-table td{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+}
+
+
+/* ===== V27: arte coletiva dedicada ===== */
+.collective-farm-mask{
+  position:absolute;
+  z-index:1;
+  left:19%;
+  top:1.7%;
+  width:62%;
+  height:7.1%;
+  background:#fff;
+}
+.collective-farm-name{
+  position:absolute;
+  z-index:3;
+  left:12%;
+  top:7.2%;
+  width:76%;
+  text-align:center;
+  color:#111;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.15px;
+}
+.collective-art-records{
+  position:absolute;
+  z-index:5;
+  left:2.15%;
+  top:19.95%;
+  width:95.7%;
+  height:59.35%;
+  pointer-events:none;
+}
+.collective-art-row{
+  position:absolute;
+  left:0;
+  top:calc(var(--row) * 2.941176%);
+  width:100%;
+  height:2.941176%;
+  display:grid;
+  grid-template-columns:12.8% 8.2% 10.1% 29.5% 10.6% 28.8%;
+  align-items:center;
+  color:#111;
+  font-size:5.6px;
+  line-height:1;
+}
+.collective-art-row span{
+  padding:0 3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* A estrutura coletiva antiga deixa de participar do layout. */
+.collective-center-mask,
+.collective-register-title,
+.collective-declaration,
+.collective-table-wrap,
+.collective-reasons{
+  display:none!important;
+}
+
+@media print{
+  body.printing-docs .collective-art-row{
+    font-size:5.2pt!important;
+  }
+}
+
+
+/* ===== V29: datas sem barras duplicadas + tipografia uniforme ===== */
+
+/* A arte já contém ___/___/____. O HTML escreve somente a data sobre a linha. */
+.cover-admission{
+  top:71.05%!important;
+  font-size:13px!important;
+  font-weight:500!important;
+}
+
+/* Um único tamanho para os dados variáveis das fichas */
+.form-field,
+.individual-art-row,
+.collective-art-row{
+  font-size:7px!important;
+  font-weight:500!important;
+  line-height:1!important;
+}
+
+/* Individual: volta ao encaixe da arte, sem deslocamento global que desalinhe as linhas */
+.individual-art-records{
+  top:50.52%!important;
+}
+.individual-art-row{
+  transform:none!important;
+}
+
+/* Coletiva: restaura a geometria da arte dedicada */
+.collective-art-records{
+  top:19.95%!important;
+  left:2.15%!important;
+  width:95.7%!important;
+  height:59.35%!important;
+}
+.collective-art-row{
+  transform:none!important;
+  grid-template-columns:12.8% 8.2% 10.1% 29.5% 10.6% 28.8%!important;
+}
+
+/* Não imprimir placeholders de data. As barras já pertencem às imagens. */
+.individual-art-row span:first-child,
+.collective-art-row span:first-child{
+  background:transparent!important;
+}
+
+@media print{
+  body.printing-docs .cover-admission{
+    font-size:9pt!important;
+    font-weight:500!important;
+  }
+  body.printing-docs .form-field,
+  body.printing-docs .individual-art-row,
+  body.printing-docs .collective-art-row{
+    font-size:6.5pt!important;
+    font-weight:500!important;
+    transform:none!important;
+  }
+}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{height:auto;position:static}
+  .nav{grid-template-columns:repeat(2,1fr)}
+  .content{padding:16px}
+  .stats{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+
+
+/* V34 — AUTENTICAÇÃO */
+.auth-screen{
+  position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:#f4f7f6;
+}
+.auth-card{
+  width:min(430px,100%);background:#fff;border:1px solid #dfe7e3;border-radius:18px;
+  padding:28px;box-shadow:0 18px 50px rgba(0,0,0,.10);
+}
+.auth-card h2{margin:0 0 6px;font-size:24px}
+.auth-card p{margin:0 0 20px;color:#66736d}
+.auth-card .field{margin-bottom:14px}
+.auth-error{min-height:22px;margin:8px 0;color:#a12222;font-size:13px}
+.auth-user{font-size:12px;color:#66736d;margin-right:8px}
+.app.auth-hidden{display:none!important}
+
+
+
+/* =========================================================
+   V54 — CSS LIMPO DAS FICHAS
+   Uma única regra final para capa, individual e coletiva.
+========================================================= */
+
+/* -------------------------
+   CAPA — DATA DE ADMISSÃO
+------------------------- */
+.cover-admission{
+  position:absolute!important;
+  left:22.6%!important;
+  top:72.15%!important;
+  width:21.5%!important;
+  height:1.55%!important;
+
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  background:transparent!important;
+  color:#111!important;
+
+  font-size:8px!important;
+  font-weight:600!important;
+  line-height:1!important;
+
+  padding:0!important;
+  margin:0!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+
+/* Se a função ainda gerar partes separadas da data */
+.cover-admission .date-art-part,
+.cover-admission i{
+  position:static!important;
+  display:inline!important;
+  transform:none!important;
+  font-style:normal!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:inherit!important;
+  color:inherit!important;
+  width:auto!important;
+  padding:0!important;
+  margin:0!important;
+}
+
+/* -------------------------
+   INDIVIDUAL — REGISTROS
+------------------------- */
+.individual-art-records{
+  position:absolute!important;
+  z-index:5!important;
+  left:3.82%!important;
+  top:50.52%!important;
+  width:92%!important;
+  height:30.15%!important;
+  pointer-events:none!important;
+}
+
+.individual-art-row{
+  position:absolute!important;
+  left:0!important;
+  top:calc(var(--row) * 9.0909%)!important;
+  width:100%!important;
+  height:9.0909%!important;
+
+  display:grid!important;
+  grid-template-columns:16.55% 9.45% 12.95% 12.45% 48.60%!important;
+  align-items:center!important;
+
+  font-size:7.5px!important;
+  font-weight:500!important;
+  line-height:1!important;
+  color:#111!important;
+
+  transform:none!important;
+}
+
+.individual-art-row .art-date{
+  position:relative!important;
+  top:1mm!important;
+  left:0!important;
+  width:100%!important;
+  height:100%!important;
+
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  background:transparent!important;
+  font-size:7.5px!important;
+  font-weight:500!important;
+  line-height:1!important;
+
+  padding:0!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+
+.individual-art-row .art-date .date-art-part,
+.individual-art-row .art-date i{
+  position:static!important;
+  transform:none!important;
+  display:inline!important;
+  font-style:normal!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:inherit!important;
+  color:inherit!important;
+  width:auto!important;
+  padding:0!important;
+  margin:0!important;
+}
+
+.individual-art-row > span{
+  position:relative!important;
+  top:1mm!important;
+
+  display:flex!important;
+  align-items:center!important;
+
+  width:100%!important;
+  height:100%!important;
+
+  padding:0 5px!important;
+  margin:0!important;
+
+  background:transparent!important;
+  color:#111!important;
+
+  font-size:7.5px!important;
+  font-weight:500!important;
+  line-height:1!important;
+
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Quantidade */
+.individual-art-row > span:nth-of-type(1){
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+/* -------------------------
+   COLETIVA — REGISTROS
+------------------------- */
+.collective-art-records{
+  position:absolute!important;
+  z-index:5!important;
+  left:2.15%!important;
+  top:19.95%!important;
+  width:95.7%!important;
+  height:59.35%!important;
+  pointer-events:none!important;
+}
+
+.collective-art-row{
+  position:absolute!important;
+  left:0!important;
+  top:calc(var(--row) * 2.941176%)!important;
+  width:100%!important;
+  height:2.941176%!important;
+
+  display:grid!important;
+  grid-template-columns:12.8% 8.2% 10.1% 29.5% 10.6% 28.8%!important;
+  align-items:center!important;
+
+  font-size:8px!important;
+  font-weight:500!important;
+  line-height:1!important;
+  color:#111!important;
+
+  transform:none!important;
+}
+
+.collective-art-row .art-date{
+  position:relative!important;
+  top:1.5mm!important;
+  left:0!important;
+  width:100%!important;
+  height:100%!important;
+
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+
+  background:transparent!important;
+  font-size:8px!important;
+  font-weight:500!important;
+  line-height:1!important;
+
+  padding:0!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+
+.collective-art-row .art-date .date-art-part,
+.collective-art-row .art-date i{
+  position:static!important;
+  transform:none!important;
+  display:inline!important;
+  font-style:normal!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:inherit!important;
+  color:inherit!important;
+  width:auto!important;
+  padding:0!important;
+  margin:0!important;
+}
+
+.collective-art-row > span{
+  position:relative!important;
+  top:1.5mm!important;
+
+  display:flex!important;
+  align-items:center!important;
+
+  width:100%!important;
+  height:100%!important;
+
+  padding:0 3px!important;
+  margin:0!important;
+
+  background:transparent!important;
+  color:#111!important;
+
+  font-size:8px!important;
+  font-weight:500!important;
+  line-height:1!important;
+
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* Quantidade */
+.collective-art-row > span:nth-of-type(1){
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+/* -------------------------
+   IMPRESSÃO
+------------------------- */
+@media print{
+  body.printing-docs .cover-admission{
+    font-size:7.5pt!important;
+  }
+
+  body.printing-docs .individual-art-row,
+  body.printing-docs .individual-art-row .art-date,
+  body.printing-docs .individual-art-row > span{
+    font-size:6.5pt!important;
+  }
+
+  body.printing-docs .collective-art-row,
+  body.printing-docs .collective-art-row .art-date,
+  body.printing-docs .collective-art-row > span{
+    font-size:6.5pt!important;
+  }
+}
+
+
+/* =========================================================
+   V55 — AJUSTE FINAL DA DATA DE ADMISSÃO
+   Único ajuste sobre o V54:
+   - aumenta a data
+   - desce levemente para apoiar melhor sobre a linha
+   - mantém fundo totalmente transparente
+========================================================= */
+.cover-admission{
+  top:72.38%!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  background:transparent!important;
+  transform:none!important;
+}
+
+.cover-admission .date-art-part,
+.cover-admission i{
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  background:transparent!important;
+}
+
+@media print{
+  body.printing-docs .cover-admission{
+    top:72.38%!important;
+    font-size:8pt!important;
+    background:transparent!important;
+  }
+}
+
+
+/* =========================================================
+   V56 — AJUSTES FINAIS
+   1) Data de admissão mais baixa, apoiada sobre a linha
+   2) Descrição do EPI e C.A. maiores e mais baixos
+========================================================= */
+
+/* DATA DE ADMISSÃO */
+.cover-admission{
+  top:72.62%!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  background:transparent!important;
+  transform:none!important;
+}
+
+/* CAMPOS DA FICHA INDIVIDUAL */
+.form-product,
+.form-ca-ref{
+  top:23.82%!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  line-height:1!important;
+  color:#111!important;
+  background:transparent!important;
+}
+
+/* garante que o conteúdo não fique recortado */
+.form-product{
+  width:38%!important;
+}
+
+.form-ca-ref{
+  width:18%!important;
+}
+
+@media print{
+  body.printing-docs .cover-admission{
+    top:72.62%!important;
+    font-size:8pt!important;
+  }
+
+  body.printing-docs .form-product,
+  body.printing-docs .form-ca-ref{
+    top:23.82%!important;
+    font-size:8pt!important;
+    font-weight:600!important;
+  }
+}
+
+
+/* =========================================================
+   V57 — MICROAJUSTE
+   Data de admissão: 0,3 mm para cima.
+========================================================= */
+.cover-admission{
+  transform:translateY(-0.3mm)!important;
+}
+
+@media print{
+  body.printing-docs .cover-admission{
+    transform:translateY(-0.3mm)!important;
+  }
+}
+
+
+/* =========================================================
+   V58 — AJUSTES SOLICITADOS
+   1. Data de admissão: 3 mm para cima.
+   2. Descrição do EPI e C.A.: fonte do mesmo porte do nome
+      do colaborador, preservando o restante do layout.
+========================================================= */
+
+/* DATA DE ADMISSÃO */
+.cover-admission{
+  transform:translateY(-3mm)!important;
+}
+
+@media print{
+  body.printing-docs .cover-admission{
+    transform:translateY(-3mm)!important;
+  }
+}
+
+/* DESCRIÇÃO DO EPI + C.A. DE REFERÊNCIA */
+.form-product,
+.form-ca-ref{
+  font-size:12px!important;
+  font-weight:500!important;
+  line-height:1!important;
+  color:#111!important;
+  background:transparent!important;
+}
+
+/* Mantém os campos bem acomodados na linha */
+.form-product{
+  width:38%!important;
+}
+
+.form-ca-ref{
+  width:18%!important;
+}
+
+@media print{
+  body.printing-docs .form-product,
+  body.printing-docs .form-ca-ref{
+    font-size:9pt!important;
+    font-weight:500!important;
+    line-height:1!important;
+  }
+}
+
+
+/* =========================================================
+   V59 — DATAS TOTALMENTE TRANSPARENTES
+   Individual + Coletiva + Data de admissão
+   Remove fundo, borda, sombra e qualquer efeito visual
+   dos elementos sobrepostos de data.
+========================================================= */
+
+.cover-admission,
+.cover-admission *,
+.individual-art-row .art-date,
+.individual-art-row .art-date *,
+.collective-art-row .art-date,
+.collective-art-row .art-date *{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+
+  text-shadow:none!important;
+  filter:none!important;
+
+  -webkit-box-shadow:none!important;
+  -webkit-filter:none!important;
+}
+
+/* Não deixa pseudo-elementos criarem faixa/traço atrás da data */
+.cover-admission::before,
+.cover-admission::after,
+.cover-admission *::before,
+.cover-admission *::after,
+.individual-art-row .art-date::before,
+.individual-art-row .art-date::after,
+.individual-art-row .art-date *::before,
+.individual-art-row .art-date *::after,
+.collective-art-row .art-date::before,
+.collective-art-row .art-date::after,
+.collective-art-row .art-date *::before,
+.collective-art-row .art-date *::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+/* Impressão */
+@media print{
+  body.printing-docs .cover-admission,
+  body.printing-docs .cover-admission *,
+  body.printing-docs .individual-art-row .art-date,
+  body.printing-docs .individual-art-row .art-date *,
+  body.printing-docs .collective-art-row .art-date,
+  body.printing-docs .collective-art-row .art-date *{
+    background:transparent!important;
+    background-color:transparent!important;
+    background-image:none!important;
+    border:0!important;
+    outline:0!important;
+    box-shadow:none!important;
+    text-shadow:none!important;
+    filter:none!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+}
+
+
+/* =========================================================
+   V60 — FICHA COLETIVA DE UNIFORMES E OUTROS ITENS
+   Arte própria, sem C.A. e sem máscara de data.
+========================================================= */
+
+.uniform-art-page{
+  position:relative!important;
+  width:210mm!important;
+  height:297mm!important;
+  min-height:297mm!important;
+  max-height:297mm!important;
+  padding:0!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+
+.uniform-art-page .uniform-art-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* Campos superiores */
+.uniform-worker-name,
+.uniform-worker-role,
+.uniform-worker-admission{
+  position:absolute;
+  z-index:5;
+  color:#111;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:10px;
+  font-weight:500;
+  line-height:1;
+}
+
+.uniform-worker-name{
+  left:26.0%;
+  top:14.15%;
+  width:67%;
+}
+
+.uniform-worker-role{
+  left:13.2%;
+  top:18.0%;
+  width:80%;
+}
+
+.uniform-worker-admission{
+  left:46.0%;
+  top:22.15%;
+  width:23%;
+  text-align:center;
+}
+
+/* Nome dinâmico da fazenda sobre o nome fixo da arte */
+.uniform-company-mask{
+  position:absolute;
+  z-index:2;
+  left:22%;
+  top:29.3%;
+  width:56%;
+  height:5.7%;
+  background:#fff;
+}
+
+.uniform-company-name{
+  position:absolute;
+  z-index:5;
+  left:15%;
+  top:30.15%;
+  width:70%;
+  text-align:center;
+  color:#062b5c;
+  font-size:22px;
+  font-weight:900;
+  line-height:1;
+}
+
+/* Observações */
+.uniform-observation{
+  position:absolute;
+  z-index:5;
+  left:17.5%;
+  top:47.65%;
+  width:76%;
+  font-size:8px;
+  line-height:1;
+  color:#111;
+  background:transparent!important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Tabela: 15 linhas */
+.uniform-art-records{
+  position:absolute;
+  z-index:5;
+  left:4.65%;
+  top:53.55%;
+  width:90.25%;
+  height:38.55%;
+  pointer-events:none;
+}
+
+.uniform-art-row{
+  position:absolute;
+  left:0;
+  top:calc(var(--row) * 6.6666667%);
+  width:100%;
+  height:6.6666667%;
+  display:grid;
+  grid-template-columns:15.1% 8.2% 13.1% 19.0% 13.2% 31.4%;
+  align-items:center;
+  color:#111;
+  font-size:7.2px;
+  font-weight:500;
+  line-height:1;
+}
+
+.uniform-art-row .uniform-date,
+.uniform-art-row > span{
+  position:relative;
+  top:0.7mm;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0 4px;
+  margin:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.uniform-art-row .uniform-date{
+  justify-content:center;
+  padding:0;
+}
+
+.uniform-art-row > span:nth-of-type(1){
+  justify-content:center;
+  text-align:center;
+}
+
+@media print{
+  body.printing-docs .uniform-art-page{
+    width:210mm!important;
+    height:297mm!important;
+    min-height:297mm!important;
+    max-height:297mm!important;
+    break-after:page!important;
+    page-break-after:always!important;
+  }
+
+  body.printing-docs .uniform-art-page:last-child{
+    break-after:auto!important;
+    page-break-after:auto!important;
+  }
+
+  body.printing-docs .uniform-worker-name,
+  body.printing-docs .uniform-worker-role,
+  body.printing-docs .uniform-worker-admission{
+    font-size:8pt!important;
+  }
+
+  body.printing-docs .uniform-company-name{
+    font-size:16pt!important;
+  }
+
+  body.printing-docs .uniform-art-row{
+    font-size:6.3pt!important;
+  }
+}
+
+
+/* =========================================================
+   V61 — UNIFORMES / OUTROS ITENS
+   Ajuste de disposição e tamanho dos textos
+========================================================= */
+
+/* DADOS DO COLABORADOR */
+.uniform-worker-name{
+  left:25.2%!important;
+  top:13.95%!important;
+  width:68%!important;
+  font-size:11px!important;
+  font-weight:500!important;
+}
+
+.uniform-worker-role{
+  left:12.2%!important;
+  top:17.65%!important;
+  width:81%!important;
+  font-size:11px!important;
+  font-weight:500!important;
+}
+
+/* DATA DE ADMISSÃO:
+   tira a aparência de caixa e posiciona o texto sobre a linha */
+.uniform-worker-admission{
+  left:46.8%!important;
+  top:21.65%!important;
+  width:22%!important;
+  height:auto!important;
+
+  font-size:10px!important;
+  font-weight:500!important;
+  line-height:1!important;
+
+  text-align:center!important;
+  color:#111!important;
+
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+
+  padding:0!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+
+/* EMPRESA */
+.uniform-company-name{
+  top:30.05%!important;
+  font-size:20px!important;
+  line-height:1!important;
+}
+
+/* OBSERVAÇÃO */
+.uniform-observation{
+  font-size:10px!important;
+  font-weight:500!important;
+}
+
+/* TABELA */
+.uniform-art-row{
+  font-size:9px!important;
+  font-weight:500!important;
+  line-height:1!important;
+}
+
+/* Centraliza Data e Qtd. */
+.uniform-art-row .uniform-date{
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+.uniform-art-row > span:nth-of-type(1){
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+/* Item, variação e motivo alinhados à esquerda */
+.uniform-art-row > span:nth-of-type(2),
+.uniform-art-row > span:nth-of-type(3),
+.uniform-art-row > span:nth-of-type(4){
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+
+/* Desce discretamente os dados dentro das células */
+.uniform-art-row .uniform-date,
+.uniform-art-row > span{
+  top:1.15mm!important;
+}
+
+/* Evita qualquer caixa/faixa nas datas */
+.uniform-worker-admission::before,
+.uniform-worker-admission::after,
+.uniform-art-row .uniform-date::before,
+.uniform-art-row .uniform-date::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+/* IMPRESSÃO */
+@media print{
+  body.printing-docs .uniform-worker-name,
+  body.printing-docs .uniform-worker-role{
+    font-size:8.5pt!important;
+  }
+
+  body.printing-docs .uniform-worker-admission{
+    font-size:8pt!important;
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+
+  body.printing-docs .uniform-company-name{
+    font-size:15pt!important;
+  }
+
+  body.printing-docs .uniform-observation{
+    font-size:7.5pt!important;
+  }
+
+  body.printing-docs .uniform-art-row{
+    font-size:7pt!important;
+  }
+
+  body.printing-docs .uniform-art-row .uniform-date,
+  body.printing-docs .uniform-art-row > span{
+    top:1.15mm!important;
+  }
+}
+
+
+/* =========================================================
+   V63 — NOVO LAYOUT DA FICHA DE UNIFORMES
+   Baseado no esboço mais recente:
+   Data | Qtd. | ITEM (mais largo) | Var/Tam (estreito)
+   | Motivo | Assinatura
+========================================================= */
+
+/* Nome e função: 0,5 cm para a direita em relação ao V61 */
+.uniform-worker-name{
+  transform:translateX(5mm)!important;
+}
+.uniform-worker-role{
+  transform:translateX(5mm)!important;
+}
+
+/* Cobre apenas a tabela antiga da arte */
+.uniform-table-mask{
+  position:absolute;
+  z-index:4;
+  left:4.45%;
+  top:52.95%;
+  width:91.1%;
+  height:39.65%;
+  background:#fff;
+  border-radius:0 0 9px 9px;
+}
+
+/* Nova tabela desenhada em HTML */
+.uniform-new-table{
+  position:absolute;
+  z-index:6;
+  left:4.45%;
+  top:52.95%;
+  width:91.1%;
+  height:39.65%;
+  border:1.4px solid #173f73;
+  border-radius:9px;
+  overflow:hidden;
+  background:#fff;
+}
+
+/* Proporções conforme o esboço:
+   Data 14%
+   Qtd 7%
+   Item 32%
+   Variação/Tamanho 8%
+   Motivo 12%
+   Assinatura 27%
+*/
+.uniform-new-head{
+  height:7.1%;
+  display:grid;
+  grid-template-columns:14% 7% 32% 8% 12% 27%;
+  background:#062b5c;
+  color:#fff;
+  font-size:8px;
+  font-weight:800;
+  line-height:1.05;
+  text-align:center;
+}
+
+.uniform-new-head > div{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid #9aa8bb;
+  padding:1px 2px;
+}
+.uniform-new-head > div:last-child{border-right:0}
+
+.uniform-new-records{
+  position:relative;
+  height:92.9%;
+  background:#fff;
+}
+
+.uniform-new-row{
+  position:absolute;
+  left:0;
+  top:calc(var(--row) * 6.6666667%);
+  width:100%;
+  height:6.6666667%;
+  display:grid;
+  grid-template-columns:14% 7% 32% 8% 12% 27%;
+  align-items:center;
+  font-size:9px;
+  font-weight:500;
+  line-height:1;
+  color:#111;
+  border-bottom:1px solid #b9c3d0;
+}
+
+/* linhas verticais */
+.uniform-new-row > div{
+  height:100%;
+  display:flex;
+  align-items:center;
+  border-right:1px solid #b9c3d0;
+  padding:0 4px;
+  background:transparent;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  box-sizing:border-box;
+}
+.uniform-new-row > div:last-child{border-right:0}
+
+/* Todos os dados descem 0,3 cm */
+.uniform-new-row > div{
+  padding-top:3mm;
+}
+
+/* Data e quantidade centralizadas */
+.uniform-new-date,
+.uniform-new-qtd{
+  justify-content:center;
+  text-align:center;
+}
+
+/* Item alinhado à esquerda e com área ampla */
+.uniform-new-item{
+  justify-content:flex-start;
+  text-align:left;
+}
+
+/* Variação/Tamanho é propositalmente estreito.
+   O conteúdo é centralizado, pois serão valores como G, GG, 42, 44. */
+.uniform-new-var{
+  justify-content:center;
+  text-align:center;
+}
+
+/* Motivo deslocado visualmente 0,5 cm para a direita */
+.uniform-new-motivo{
+  justify-content:flex-start;
+  text-align:left;
+  padding-left:5mm!important;
+}
+
+/* assinatura vazia */
+.uniform-new-sign{
+  background:transparent;
+}
+
+/* Não usa mais as linhas antigas de registros */
+.uniform-art-records{
+  display:none!important;
+}
+
+@media print{
+  body.printing-docs .uniform-new-head{
+    font-size:6.5pt!important;
+  }
+
+  body.printing-docs .uniform-new-row{
+    font-size:7pt!important;
+  }
+
+  body.printing-docs .uniform-new-row > div{
+    padding-top:3mm!important;
+  }
+
+  body.printing-docs .uniform-new-motivo{
+    padding-left:5mm!important;
+  }
+}
+
+
+/* =========================================================
+   V64 — RESTAURA AS 15 LINHAS DA TABELA DE UNIFORMES
+   O V63 criou somente as linhas correspondentes aos registros.
+   Agora a grade é desenhada independentemente da quantidade
+   de entregas, mantendo sempre 15 linhas visíveis.
+========================================================= */
+
+.uniform-new-records{
+  position:relative!important;
+  height:92.9%!important;
+
+  /* 15 linhas horizontais fixas */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(6.6666667% - 1px),
+      #b9c3d0 calc(6.6666667% - 1px),
+      #b9c3d0 6.6666667%
+    )!important;
+}
+
+/* As divisões verticais precisam atravessar toda a tabela,
+   inclusive as linhas vazias. */
+.uniform-new-records::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  pointer-events:none!important;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(14% - 1px),
+      #b9c3d0 calc(14% - 1px),
+      #b9c3d0 14%,
+
+      transparent 14%,
+      transparent calc(21% - 1px),
+      #b9c3d0 calc(21% - 1px),
+      #b9c3d0 21%,
+
+      transparent 21%,
+      transparent calc(53% - 1px),
+      #b9c3d0 calc(53% - 1px),
+      #b9c3d0 53%,
+
+      transparent 53%,
+      transparent calc(61% - 1px),
+      #b9c3d0 calc(61% - 1px),
+      #b9c3d0 61%,
+
+      transparent 61%,
+      transparent calc(73% - 1px),
+      #b9c3d0 calc(73% - 1px),
+      #b9c3d0 73%,
+
+      transparent 73%
+    )!important;
+}
+
+/* Os dados ficam sobre a grade fixa */
+.uniform-new-row{
+  z-index:2!important;
+  border-bottom:0!important;
+  background:transparent!important;
+}
+
+/* Evita duplicar as linhas verticais que agora são desenhadas
+   pela grade fixa. */
+.uniform-new-row > div{
+  border-right:0!important;
+  background:transparent!important;
+}
+
+/* Mantém os mesmos 15 espaços, mesmo havendo apenas 1 entrega */
+.uniform-new-row{
+  height:6.6666667%!important;
+  top:calc(var(--row) * 6.6666667%)!important;
+}
+
+@media print{
+  body.printing-docs .uniform-new-records{
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(6.6666667% - 1px),
+        #b9c3d0 calc(6.6666667% - 1px),
+        #b9c3d0 6.6666667%
+      )!important;
+  }
+}
+
+
+/* =========================================================
+   V66 — REMOVE "FAZENDA / EMPRESA" SEM EDITAR A ARTE
+   Correção segura: volta ao V64 intacto e apenas cobre o
+   subtítulo fixo com uma máscara branca.
+========================================================= */
+
+.uniform-subtitle-mask{
+  position:absolute;
+  z-index:4;
+  left:28%;
+  top:31.15%;
+  width:44%;
+  height:2.6%;
+  background:#fff;
+  pointer-events:none;
+}
+
+/* Nome dinâmico permanece acima da máscara */
+.uniform-company-name{
+  z-index:5!important;
+}
+
+
+/* =========================================================
+   V67 — 15 LINHAS REAIS NA TABELA DE UNIFORMES
+   Não depende de gradiente.
+   Cada linha vazia existe no HTML e possui suas próprias bordas.
+========================================================= */
+
+.uniform-new-records{
+  position:relative!important;
+  height:92.9%!important;
+  background:#fff!important;
+}
+
+/* cada linha ocupa exatamente 1/15 da área */
+.uniform-new-row{
+  position:absolute!important;
+  left:0!important;
+  top:calc(var(--row) * 6.6666667%)!important;
+  width:100%!important;
+  height:6.6666667%!important;
+
+  display:grid!important;
+  grid-template-columns:14% 7% 32% 8% 12% 27%!important;
+  align-items:stretch!important;
+
+  border-bottom:1px solid #b9c3d0!important;
+  background:#fff!important;
+  box-sizing:border-box!important;
+  z-index:2!important;
+}
+
+/* divisões verticais reais em TODAS as 15 linhas */
+.uniform-new-row > div{
+  display:flex!important;
+  align-items:center!important;
+  height:100%!important;
+
+  border-right:1px solid #b9c3d0!important;
+  box-sizing:border-box!important;
+
+  background:transparent!important;
+  padding:3mm 4px 0!important;
+
+  font-size:9px!important;
+  font-weight:500!important;
+  line-height:1!important;
+  color:#111!important;
+
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+.uniform-new-row > div:last-child{
+  border-right:0!important;
+}
+
+/* alinhamentos */
+.uniform-new-date,
+.uniform-new-qtd{
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+.uniform-new-item{
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+
+.uniform-new-var{
+  justify-content:center!important;
+  text-align:center!important;
+}
+
+.uniform-new-motivo{
+  justify-content:flex-start!important;
+  text-align:left!important;
+  padding-left:5mm!important;
+}
+
+/* desativa qualquer grade antiga baseada em pseudo-elementos/gradiente */
+.uniform-new-records::before,
+.uniform-new-records::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+}
+
+@media print{
+  body.printing-docs .uniform-new-row{
+    border-bottom:1px solid #b9c3d0!important;
+  }
+
+  body.printing-docs .uniform-new-row > div{
+    border-right:1px solid #b9c3d0!important;
+    padding-top:3mm!important;
+    font-size:7pt!important;
+  }
+
+  body.printing-docs .uniform-new-row > div:last-child{
+    border-right:0!important;
+  }
+}
+
+
+/* =========================================================
+   V68 — FECHAMENTO DA FICHA DE UNIFORMES
+   Linha horizontal entre o cabeçalho e a primeira linha.
+========================================================= */
+
+.uniform-new-head{
+  border-bottom:1.5px solid #173f73!important;
+  box-sizing:border-box!important;
+}
+
+@media print{
+  body.printing-docs .uniform-new-head{
+    border-bottom:1.5px solid #173f73!important;
+  }
+}
+
+
+/* =========================================================
+   V69 — REMOÇÃO FINAL DE "FAZENDA / EMPRESA"
+   Mantém somente o nome dinâmico da fazenda.
+========================================================= */
+.uniform-subtitle-mask{
+  position:absolute!important;
+  z-index:10!important;
+  left:20%!important;
+  top:31.9%!important;
+  width:60%!important;
+  height:2.8%!important;
+  background:#fff!important;
+  border:0!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+}
+
+/* nome da fazenda continua visível acima */
+.uniform-company-name{
+  z-index:11!important;
+}
+
+
+/* =========================================================
+   V70 — REMOVE "FAZENDA / EMPRESA" NO PONTO CORRETO
+   A máscara anterior estava abaixo do texto.
+========================================================= */
+.uniform-subtitle-mask{
+  position:absolute!important;
+  z-index:10!important;
+
+  /* faixa exata entre o nome da fazenda e o título da ficha */
+  left:28%!important;
+  top:29.15%!important;
+  width:44%!important;
+  height:2.15%!important;
+
+  background:#fff!important;
+  background-color:#fff!important;
+  border:0!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+}
+
+/* Nome dinâmico da fazenda continua acima da máscara */
+.uniform-company-name{
+  z-index:11!important;
+}
+
+
+/* =========================================================
+   V71 — NOME DA FAZENDA
+   Desloca somente o nome dinâmico 1 cm para baixo.
+========================================================= */
+.uniform-company-name{
+  transform:translateY(10mm)!important;
+}
+
+@media print{
+  body.printing-docs .uniform-company-name{
+    transform:translateY(10mm)!important;
+  }
+}
+
+
+/* =========================================================
+   V75 — ARTE DE UNIFORMES LIMPA NA ORIGEM
+   - remove textos fixos do cliente
+   - remove cabeçalho original da tabela
+   - usa apenas dados/cabeçalho dinâmicos do sistema
+========================================================= */
+
+.uniform-subtitle-mask{
+  display:none!important;
+}
+
+/* mantém o nome dinâmico como único nome exibido */
+.uniform-company-name{
+  z-index:12!important;
+  font-size:24px!important;
+  font-weight:900!important;
+}
+
+/* a máscara do corpo da tabela continua útil para esconder
+   apenas a grade antiga, mas não precisa mais cobrir o cabeçalho */
+.uniform-table-mask{
+  top:54.0%!important;
+  height:39.8%!important;
+}
+
+
+/* =========================================================
+   V76 — ÚLTIMO AJUSTE DA FICHA DE UNIFORMES
+   Aumenta SOMENTE o nome dinâmico da fazenda/cliente.
+========================================================= */
+.uniform-company-name{
+  z-index:12!important;
+  font-size:32px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+}
+
+@media print{
+  body.printing-docs .uniform-company-name{
+    font-size:24pt!important;
+    font-weight:900!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+}
+
+
+/* =========================================================
+   V78 — CORREÇÃO LIMPA DA MÁSCARA DA TABELA
+   Base: V76
+   - não altera página
+   - não reduz rodapé
+   - não usa padding-bottom
+   - limita a máscara branca somente à área da tabela antiga
+========================================================= */
+
+/* A máscara cobre só a área necessária da tabela antiga,
+   sem avançar sobre o rodapé da arte. */
+.uniform-table-mask{
+  display:block!important;
+  position:absolute!important;
+  z-index:4!important;
+
+  left:4.10%!important;
+  top:52.05%!important;
+  width:91.80%!important;
+  height:38.55%!important;
+
+  background:#fff!important;
+  background-color:#fff!important;
+  background-image:none!important;
+
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+
+  pointer-events:none!important;
+}
+
+/* Mantém a tabela nova por cima da máscara */
+.uniform-new-table{
+  z-index:6!important;
+}
+
+/* Garante que o rodapé da arte continue totalmente visível */
+.uniform-art-page{
+  padding-bottom:0!important;
+  box-sizing:border-box!important;
+}
+
+@media print{
+  body.printing-docs .uniform-table-mask{
+    left:4.10%!important;
+    top:52.05%!important;
+    width:91.80%!important;
+    height:38.55%!important;
+    background:#fff!important;
+  }
+
+  body.printing-docs .uniform-art-page{
+    padding-bottom:0!important;
+  }
+}
+
+
+/* =========================================================
+   V79 — EMPRESA / FAZENDA NO LOGIN
+========================================================= */
+#authEmpresa{
+  width:100%;
+  min-height:48px;
+  border:1px solid #cfd8e6;
+  border-radius:10px;
+  padding:0 14px;
+  background:#fff;
+  color:#10233f;
+  font:inherit;
+}
+
+#authEmpresa:disabled{
+  opacity:.65;
+  cursor:wait;
+}
+
+
+/* =========================================================
+   V80 — PROGRAMAÇÃO DE TROCAS
+========================================================= */
+.prog-colab-card{background:#fff;border:1px solid #dbe3ec;border-radius:14px;margin-bottom:16px;overflow:hidden}
+.prog-colab-head{padding:16px 18px;background:#f5f8fc;border-bottom:1px solid #dbe3ec;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.prog-colab-head h3{margin:0 0 5px;font-size:17px;color:#17365d}
+.prog-colab-meta{font-size:12px;color:#66788d}
+.prog-colab-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 18px;border-top:1px solid #dbe3ec;background:#fafbfd}
+.prog-status{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.prog-atrasada{background:#fee2e2;color:#991b1b}
+.prog-programada{background:#e0f2fe;color:#075985}
+.prog-summary{margin-top:20px;background:#fff;border:1px solid #dbe3ec;border-radius:14px;overflow:hidden}
+.prog-summary h3{margin:0;padding:16px 18px;background:#17365d;color:#fff;font-size:16px}
+.prog-empty{padding:26px;text-align:center;color:#66788d;background:#fff;border:1px dashed #cbd5e1;border-radius:12px}
+.prog-doc-title{display:none}
+
+@media print{
+  body.printing-programacao .sidebar,
+  body.printing-programacao .topbar,
+  body.printing-programacao #programacaoTrocas > .section-title,
+  body.printing-programacao #programacaoTrocas > .card,
+  body.printing-programacao .prog-gerar-saida,
+  body.printing-programacao .prog-no-print{display:none!important}
+
+  body.printing-programacao .content{margin:0!important;padding:0!important;width:100%!important}
+  body.printing-programacao .page{display:none!important}
+  body.printing-programacao #programacaoTrocas{display:block!important}
+  body.printing-programacao #progResultado{margin:0!important}
+  body.printing-programacao .prog-doc-title{display:block!important;margin:0 0 14px}
+  body.printing-programacao .prog-colab-card{
+    break-before:page;
+    page-break-before:always;
+    border:1px solid #aebdce;
+    border-radius:0;
+  }
+  body.printing-programacao .prog-colab-card:first-of-type{
+    break-before:auto;
+    page-break-before:auto;
+  }
+  body.printing-programacao .prog-summary{
+    break-before:page;
+    page-break-before:always;
+    border-radius:0;
+  }
+}
+
+
+/* =========================================================
+   V81 — CORREÇÃO DE LAYOUT DA PROGRAMAÇÃO DE TROCAS
+   A página agora está dentro do <main class="content">.
+========================================================= */
+
+#programacaoTrocas{
+  width:100%;
+  min-width:0;
+}
+
+#programacaoTrocas > .section-title{
+  margin-bottom:14px;
+}
+
+#programacaoTrocas > .card{
+  width:100%;
+}
+
+#programacaoTrocas .toolbar{
+  align-items:flex-end;
+  flex-wrap:wrap;
+}
+
+#programacaoTrocas #progResultado{
+  width:100%;
+  min-width:0;
+}
+
+#programacaoTrocas .prog-colab-card,
+#programacaoTrocas .prog-summary{
+  width:100%;
+}
+
+#programacaoTrocas .table-wrap{
+  width:100%;
+  overflow-x:auto;
+}
+
+@media(max-width:900px){
+  #programacaoTrocas .toolbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  #programacaoTrocas .toolbar .field{
+    width:100%;
+    min-width:0!important;
+  }
+
+  #programacaoTrocas .toolbar .btn{
+    width:100%;
+  }
+
+  #programacaoTrocas .prog-colab-head,
+  #programacaoTrocas .prog-colab-foot{
+    flex-direction:column;
+    align-items:stretch;
+  }
+}
