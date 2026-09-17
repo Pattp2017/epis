@@ -15,11 +15,9 @@ const KEY_SAIDAS = 'rgcerte_saidas_v1';
 // =========================================================
 // V30 — SUPABASE: PRIMEIRA MIGRAÇÃO (ENTRADAS)
 // =========================================================
-const SUPABASE_URL = 'https://uofnninqxnsvaemxpwhh.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_kCX0kt1EFYYL0sR3zQHDzg_6rLVRJQ8';
 const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
+  window.APP_CONFIG.supabase.url,
+  window.APP_CONFIG.supabase.publishableKey
 );
 
 const SUPABASE_EMPRESA_NOME = 'Fazenda Vale do Sol';
@@ -1859,40 +1857,69 @@ renderColabs();
 document.getElementById('entradaData').value=hojeISO();
 document.getElementById('saidaData').value=hojeISO();
 document.getElementById('admissaoData').value=hojeISO();
-async function carregarEmpresasAtivasLogin(){
+async function carregarEmpresasAtivasLogin(session){
   const select=document.getElementById('authEmpresa');
-  const errorBox=document.getElementById('authError');
 
   select.disabled=true;
   select.innerHTML='<option value="">Carregando empresas...</option>';
 
-  const {data,error}=await supabaseClient
-    .from('epi_empresas')
-    .select('id,nome')
-    .eq('ativo',true)
-    .order('nome');
+  const usuarioId=session?.user?.id;
+  if(!usuarioId){
+    select.innerHTML='<option value="">Sessão inválida</option>';
+    throw new Error('Não foi possível identificar o usuário autenticado.');
+  }
 
-  if(error){
-    console.error(error);
+  // Primeiro identifica quais empresas este usuário pode acessar.
+  const {data:vinculos,error:vinculosError}=await supabaseClient
+    .from('usuario_empresas')
+    .select('empresa_id,papel')
+    .eq('usuario_id',usuarioId)
+    .eq('ativo',true);
+
+  if(vinculosError){
+    console.error(vinculosError);
     select.innerHTML='<option value="">Não foi possível carregar</option>';
     throw new Error(
-      'Login realizado, mas não foi possível carregar as empresas. Verifique a política RLS da tabela epi_empresas.'
+      'Login realizado, mas não foi possível consultar as empresas autorizadas para este usuário.'
     );
   }
 
-  const empresas=data||[];
+  const empresaIds=[...new Set((vinculos||[]).map(v=>v.empresa_id).filter(Boolean))];
+
+  if(!empresaIds.length){
+    select.innerHTML='<option value="">Nenhuma empresa autorizada</option>';
+    throw new Error('Seu usuário não possui acesso a nenhuma empresa ativa.');
+  }
+
+  // Depois carrega somente os dados das empresas autorizadas.
+  const {data:empresas,error:empresasError}=await supabaseClient
+    .from('empresas')
+    .select('id,nome')
+    .in('id',empresaIds)
+    .eq('ativo',true)
+    .order('nome');
+
+  if(empresasError){
+    console.error(empresasError);
+    select.innerHTML='<option value="">Não foi possível carregar</option>';
+    throw new Error(
+      'As permissões foram encontradas, mas não foi possível carregar os dados das empresas.'
+    );
+  }
+
+  const lista=empresas||[];
 
   select.innerHTML=
     '<option value="">Selecione...</option>'+
-    empresas.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');
+    lista.map(e=>`<option value="${e.id}">${e.nome}</option>`).join('');
 
   select.disabled=false;
 
-  if(!empresas.length){
-    throw new Error('Nenhuma empresa ativa foi encontrada.');
+  if(!lista.length){
+    throw new Error('Nenhuma empresa ativa autorizada foi encontrada.');
   }
 
-  return empresas;
+  return lista;
 }
 
 async function prepararSelecaoEmpresa(session){
@@ -1910,7 +1937,7 @@ async function prepararSelecaoEmpresa(session){
   const errorBox=document.getElementById('authError');
   errorBox.textContent='Selecione a empresa/fazenda.';
 
-  await carregarEmpresasAtivasLogin();
+  await carregarEmpresasAtivasLogin(session);
 }
 
 async function iniciarSistemaAutenticado(session,empresaId,empresaNome){
