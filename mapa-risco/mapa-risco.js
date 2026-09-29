@@ -198,7 +198,14 @@ function extractStructuredBlocksFromPages(pages){
       const inv=lines[i].match(/INVENT[ÁA]RIO DE RISCOS?\s+(.+?)(?:\s*-\s*.+)?$/i);
       if(inv)group=clean(inv[1]);
       if(!/^Exposi[cç][aã]o\s*:/i.test(lines[i]))continue;
-      const riskName=i>0?clean(lines[i-1].replace(/^[■▪▫•\u25A0\u25AA\s]+/,'')):'';
+      let riskName='';
+      for(let j=i-1;j>=Math.max(0,i-5);j--){
+        const candidate=clean(lines[j].replace(/^[■▪▫•\u25A0\u25AA\s]+/,''));
+        if(!candidate)continue;
+        if(/sistema eso|telefone|e-?mail|documento|invent[aá]rio|p[aá]gina/i.test(candidate))continue;
+        if(/^(Exposi[cç][aã]o|Metodologia|Probabilidade|Severidade|N[ií]vel de Risco)\s*:/i.test(candidate))continue;
+        riskName=candidate;break;
+      }
       const slice=lines.slice(i,Math.min(lines.length,i+30));
       const source=afterLabelUntil(slice,'Perigos, fontes e circunstâncias',
         ['Metodologia','Medidas administrativas ou de organização do trabalho']);
@@ -218,7 +225,11 @@ function extractRisksByEnvironment(text,environments){
   environments.forEach(env=>{
     const envKey=noAccent(env).toUpperCase();
     blocks.filter(b=>noAccent(b.pageText).toUpperCase().includes(envKey)).forEach(b=>{
-      const type=classifyRisk((b.group||'')+' '+b.riskName+' '+b.source);
+      const g=noAccent(b.group||'').toUpperCase();
+      const type=g.includes('FISIC')?'FÍSICO':
+        g.includes('QUIMIC')?'QUÍMICO':
+        g.includes('BIOLOG')?'BIOLÓGICO':
+        g.includes('ERGON')?'ERGONÔMICO':'ACIDENTE';
       const combinedSource=[
         b.group?'Grupo: '+b.group:'',
         'Risco: '+b.riskName,
@@ -267,14 +278,25 @@ function renderRiskEnvironment(){
     riskList.appendChild(empty);
   }else rows.forEach(addRiskRow);
 }
+let currentRiskEnvironment='';
 function openRiskReview(environments){
   riskEnvironment.innerHTML=environments.map(e=>'<option></option>').join('');
   [...riskEnvironment.options].forEach((o,i)=>{o.value=environments[i];o.textContent=environments[i]});
+  currentRiskEnvironment=riskEnvironment.value;
   riskCard.classList.remove('hidden');
   renderRiskEnvironment();
   riskCard.scrollIntoView({behavior:'smooth',block:'start'});
 }
-riskEnvironment.addEventListener('change',()=>{renderRiskEnvironment()});
+riskEnvironment.addEventListener('change',()=>{
+  const next=riskEnvironment.value;
+  if(currentRiskEnvironment){
+    riskEnvironment.value=currentRiskEnvironment;
+    collectCurrentRisks();
+    riskEnvironment.value=next;
+  }
+  currentRiskEnvironment=next;
+  renderRiskEnvironment();
+});
 document.getElementById('addRiskBtn').onclick=()=>{
   const empty=riskList.querySelector('.risk-empty');if(empty)empty.remove();
   addRiskRow();
@@ -282,5 +304,6 @@ document.getElementById('addRiskBtn').onclick=()=>{
 document.getElementById('saveRisksBtn').onclick=()=>{
   collectCurrentRisks();
   sessionStorage.setItem('mapaRiscoRiscos',JSON.stringify(risksByEnvironment));
-  showStatus('Revisão salva neste navegador. Próxima etapa: montar o mapa final.');
+  showStatus('Revisão salva neste navegador.');
+  statusBox.scrollIntoView({behavior:'smooth',block:'center'});
 };
