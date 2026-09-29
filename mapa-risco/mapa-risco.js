@@ -7,6 +7,7 @@ const resultCard=document.getElementById('resultCard');
 const environmentList=document.getElementById('environmentList');
 let selectedFile=null;
 let extractedText='';
+let extractedPages=[];
 let risksByEnvironment={};
 
 if(window.pdfjsLib){
@@ -79,12 +80,23 @@ processBtn.onclick=async()=>{
   try{
     const buffer=await selectedFile.arrayBuffer();
     const pdf=await pdfjsLib.getDocument({data:buffer}).promise;
-    let text='';
+    let text=''; extractedPages=[];
     for(let p=1;p<=pdf.numPages;p++){
       showStatus('Lendo página '+p+' de '+pdf.numPages+'...');
       const page=await pdf.getPage(p);
       const content=await page.getTextContent();
-      text+='\n'+content.items.map(i=>i.str).join(' ')+'\n';
+      const rows=new Map();
+      content.items.forEach(item=>{
+        const y=Math.round(item.transform?.[5]||0);
+        if(!rows.has(y))rows.set(y,[]);
+        rows.get(y).push({x:item.transform?.[4]||0,s:item.str||''});
+      });
+      const lines=[...rows.entries()].sort((a,b)=>b[0]-a[0]).map(([,items])=>
+        clean(items.sort((a,b)=>a.x-b.x).map(i=>i.s).join(' '))
+      ).filter(Boolean);
+      const pageText=lines.join('\n');
+      extractedPages.push(pageText);
+      text+='\n'+pageText+'\n';
     }
     extractedText=text;
     const environments=detectEnvironments(text);
@@ -155,60 +167,68 @@ function getField(block,startLabel,endLabels){
   });
   return clean(block.slice(a,b));
 }
-function extractStructuredBlocks(text){
-  const flat=clean(text);
-  const norm=noAccent(flat);
-  const needle='Exposicao:';
-  const positions=[];let pos=0;
-  while((pos=norm.indexOf(needle,pos))>=0){positions.push(pos);pos+=needle.length}
+function lineValue(lines,label){
+  const key=noAccent(label).toLowerCase();
+  const i=lines.findIndex(l=>noAccent(l).toLowerCase().startsWith(key));
+  if(i<0)return '';
+  const line=lines[i];
+  const colon=line.indexOf(':');
+  return clean(colon>=0?line.slice(colon+1):line.slice(label.length));
+}
+function afterLabelUntil(lines,label,stopLabels){
+  const key=noAccent(label).toLowerCase();
+  const i=lines.findIndex(l=>noAccent(l).toLowerCase().startsWith(key));
+  if(i<0)return '';
+  const out=[];
+  const first=lineValue(lines,label); if(first)out.push(first);
+  for(let j=i+1;j<lines.length;j++){
+    const n=noAccent(lines[j]).toLowerCase();
+    if(stopLabels.some(x=>n.startsWith(noAccent(x).toLowerCase())))break;
+    if(/sistema eso|telefone|e-?mail|pagina \d|documento/i.test(lines[j]))continue;
+    out.push(lines[j]);
+  }
+  return clean(out.join(' '));
+}
+function extractStructuredBlocksFromPages(pages){
   const blocks=[];
-  positions.forEach((p,i)=>{
-    const from=Math.max(0,p-220);
-    const to=i+1<positions.length?positions[i+1]:Math.min(flat.length,p+3500);
-    const block=flat.slice(from,to);
-    const source=getField(block,'Perigos, fontes e circunstâncias',
-      ['Metodologia','Medidas administrativas ou de organização do trabalho']);
-    const measure=getField(block,'Medidas administrativas ou de organização do trabalho',
-      ['Descrição do Agente Nocivo','Possíveis danos à saúde','Probabilidade']);
-    const level=getField(block,'Nível de Risco',
-      ['Estimativa','Informação adicional necessária','Questionário EPIs']);
-    if(!source)return;
-    const exposureIndex=noAccent(block).indexOf('Exposicao:');
-    const beforeExposure=clean(block.slice(0,exposureIndex));
-    const inventoryMatch=beforeExposure.match(/INVENT[ÁA]RIO DE RISCOS?\s+([^\-]{2,80})\s*-\s*([^|]{2,100})/i);
-    const group=inventoryMatch?clean(inventoryMatch[1]):'';
-    let riskName=beforeExposure;
-    if(inventoryMatch) riskName=clean(beforeExposure.slice((inventoryMatch.index||0)+inventoryMatch[0].length));
-    riskName=riskName.replace(/^[■▪▫•\s]+/,'').trim();
-    if(!riskName) riskName=clean(beforeExposure).slice(-180);
-    blocks.push({group,riskName,source,measure,level});
+  pages.forEach(pageText=>{
+    const lines=pageText.split('\n').map(clean).filter(Boolean);
+    let group='';
+    for(let i=0;i<lines.length;i++){
+      const inv=lines[i].match(/INVENT[ÁA]RIO DE RISCOS?\s+(.+?)(?:\s*-\s*.+)?$/i);
+      if(inv)group=clean(inv[1]);
+      if(!/^Exposi[cç][aã]o\s*:/i.test(lines[i]))continue;
+      const riskName=i>0?clean(lines[i-1].replace(/^[■▪▫•\u25A0\u25AA\s]+/,'')):'';
+      const slice=lines.slice(i,Math.min(lines.length,i+30));
+      const source=afterLabelUntil(slice,'Perigos, fontes e circunstâncias',
+        ['Metodologia','Medidas administrativas ou de organização do trabalho']);
+      const measure=afterLabelUntil(slice,'Medidas administrativas ou de organização do trabalho',
+        ['Descrição do Agente Nocivo','Possíveis danos à saúde','Probabilidade']);
+      const level=lineValue(slice,'Nível de Risco');
+      if(!source||!riskName)continue;
+      if(/sistema eso|telefone|e-?mail|documento/i.test(riskName))continue;
+      blocks.push({group,riskName,source,measure,level,pageText});
+    }
   });
   return blocks;
 }
 function extractRisksByEnvironment(text,environments){
   const result={};environments.forEach(e=>result[e]=[]);
-  const flat=clean(text),normalized=noAccent(flat).toUpperCase();
+  const blocks=extractStructuredBlocksFromPages(extractedPages);
   environments.forEach(env=>{
-    const key=noAccent(env).toUpperCase();
-    let pos=0,guard=0;
-    while((pos=normalized.indexOf(key,pos))>=0&&guard++<100){
-      const candidates=environments.map(e=>normalized.indexOf(noAccent(e).toUpperCase(),pos+key.length))
-        .filter(x=>x>pos).sort((a,b)=>a-b);
-      const end=candidates.length?candidates[0]:Math.min(flat.length,pos+18000);
-      extractStructuredBlocks(flat.slice(pos,end)).forEach(b=>{
-        const type=classifyRisk((b.group||'')+' '+(b.riskName||'')+' '+b.source);
-        const combinedSource=[
-          b.group?'Grupo: '+b.group:'',
-          b.riskName?'Risco: '+b.riskName:'',
-          b.source?'Fonte geradora: '+b.source:''
-        ].filter(Boolean).join(' | ');
-        const signature=noAccent(type+'|'+(b.riskName||'')+'|'+b.source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
-        if(!result[env].some(r=>r.signature===signature)){
-          result[env].push({type,source:combinedSource,measure:b.measure,degree:mapDegree(b.level),signature});
-        }
-      });
-      pos+=key.length;
-    }
+    const envKey=noAccent(env).toUpperCase();
+    blocks.filter(b=>noAccent(b.pageText).toUpperCase().includes(envKey)).forEach(b=>{
+      const type=classifyRisk((b.group||'')+' '+b.riskName+' '+b.source);
+      const combinedSource=[
+        b.group?'Grupo: '+b.group:'',
+        'Risco: '+b.riskName,
+        'Fonte geradora: '+b.source
+      ].filter(Boolean).join(' | ');
+      const signature=noAccent(type+'|'+b.riskName+'|'+b.source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
+      if(!result[env].some(r=>r.signature===signature)){
+        result[env].push({type,source:combinedSource,measure:b.measure,degree:mapDegree(b.level),signature});
+      }
+    });
   });
   return result;
 }
