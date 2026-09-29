@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vision SST | Mapa de Risco</title>
+  <link rel="stylesheet" href="mapa-risco.css">
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <strong>Vision SST</strong>
+    <span>Mapa de Risco</span>
+  </div>
+  <a href="../">← Voltar ao EPI</a>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>Mapa de Riscos Ambientais</h1>
+    <p>Carregue o PGRTR para identificar os ambientes. Depois os riscos poderão ser revisados e editados antes da emissão do mapa.</p>
+  </section>
+
+  <section class="card">
+    <div class="step">1</div>
+    <div class="card-content">
+      <h2>Carregar PGRTR</h2>
+      <p class="muted">Arquivo em PDF.</p>
+      <div class="upload" id="dropArea">
+        <input id="pdfInput" type="file" accept="application/pdf,.pdf" hidden>
+        <button class="btn primary" id="chooseBtn" type="button">Selecionar PGRTR</button>
+        <div id="fileName">Nenhum arquivo selecionado</div>
+      </div>
+      <button class="btn primary process" id="processBtn" type="button" disabled>Processar PGRTR</button>
+      <div id="status" class="status hidden"></div>
+    </div>
+  </section>
+
+  <section class="card hidden" id="resultCard">
+    <div class="step">2</div>
+    <div class="card-content">
+      <h2>Ambientes encontrados</h2>
+      <p class="muted">Confira os ambientes antes de avançar. Os nomes podem ser editados.</p>
+      <div id="environmentList" class="environment-list"></div>
+      <div class="actions">
+        <button class="btn secondary" id="addEnvironmentBtn" type="button">+ Adicionar ambiente</button>
+        <button class="btn primary" id="continueBtn" type="button">Continuar para os riscos</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="mapa-risco.js"></script>
+</body>
+</html>
