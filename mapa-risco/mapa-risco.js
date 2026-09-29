@@ -174,8 +174,14 @@ function extractStructuredBlocks(text){
       ['Estimativa','Informação adicional necessária','Questionário EPIs']);
     if(!source)return;
     const exposureIndex=noAccent(block).indexOf('Exposicao:');
-    const title=clean(block.slice(0,exposureIndex)).slice(-180);
-    blocks.push({title,source,measure,level});
+    const beforeExposure=clean(block.slice(0,exposureIndex));
+    const inventoryMatch=beforeExposure.match(/INVENT[ÁA]RIO DE RISCOS?\s+([^\-]{2,80})\s*-\s*([^|]{2,100})/i);
+    const group=inventoryMatch?clean(inventoryMatch[1]):'';
+    let riskName=beforeExposure;
+    if(inventoryMatch) riskName=clean(beforeExposure.slice((inventoryMatch.index||0)+inventoryMatch[0].length));
+    riskName=riskName.replace(/^[■▪▫•\s]+/,'').trim();
+    if(!riskName) riskName=clean(beforeExposure).slice(-180);
+    blocks.push({group,riskName,source,measure,level});
   });
   return blocks;
 }
@@ -190,10 +196,15 @@ function extractRisksByEnvironment(text,environments){
         .filter(x=>x>pos).sort((a,b)=>a-b);
       const end=candidates.length?candidates[0]:Math.min(flat.length,pos+18000);
       extractStructuredBlocks(flat.slice(pos,end)).forEach(b=>{
-        const type=classifyRisk(b.title+' '+b.source);
-        const signature=noAccent(type+'|'+b.source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
+        const type=classifyRisk((b.group||'')+' '+(b.riskName||'')+' '+b.source);
+        const combinedSource=[
+          b.group?'Grupo: '+b.group:'',
+          b.riskName?'Risco: '+b.riskName:'',
+          b.source?'Fonte geradora: '+b.source:''
+        ].filter(Boolean).join(' | ');
+        const signature=noAccent(type+'|'+(b.riskName||'')+'|'+b.source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
         if(!result[env].some(r=>r.signature===signature)){
-          result[env].push({type,source:b.source,measure:b.measure,degree:mapDegree(b.level),signature});
+          result[env].push({type,source:combinedSource,measure:b.measure,degree:mapDegree(b.level),signature});
         }
       });
       pos+=key.length;
