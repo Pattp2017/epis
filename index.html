@@ -1,1 +1,66 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vision</title></head><body><div id="boot" style="font-family:Arial;padding:24px">Carregando Vision...</div><script>(async()=>{try{const u='https://raw.githubusercontent.com/Pattp2017/epis/8a442d37eb99ee11ffa96e990de7efea54b6f95c/index.html';let h=await fetch(u,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('Falha ao carregar interface');return r.text()});h=h.replace('<script src="dashboard.js"></'+'script>','<script src="cotacoes.js"></'+'script>\n<script src="dashboard.js"></'+'script>\n<script src="cotacao-dashboard.js"></'+'script>\n<script src="recebimento-cotacao.js"></'+'script>');document.open();document.write(h);document.close()}catch(e){document.getElementById('boot').innerHTML='<b>Não foi possível carregar o Vision.</b><br>'+String(e.message||e)}})();</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vision SST</title>
+</head>
+
+<body>
+
+<div id="boot" style="font-family:Arial;padding:24px">
+  Carregando Vision...
+</div>
+
+<script>
+(async () => {
+  try {
+
+    /* Carrega a interface-base que já estava funcionando */
+    const u =
+      'https://raw.githubusercontent.com/Pattp2017/epis/8a442d37eb99ee11ffa96e990de7efea54b6f95c/index.html';
+
+    let h = await fetch(u, {
+      cache: 'no-store'
+    }).then(r => {
+      if (!r.ok) {
+        throw new Error('Falha ao carregar interface');
+      }
+      return r.text();
+    });
+
+    /*
+      IMPORTANTE:
+      a interface antiga continua sendo usada,
+      mas o app.js passa a ser o ATUAL da branch main.
+    */
+    h = h.replace(
+      '<script src="app.js"></' + 'script>',
+      '<script src="app.js?v=dev-login-off-2"></' + 'script>'
+    );
+
+    /* Scripts adicionais atuais */
+    h = h.replace(
+      '<script src="dashboard.js"></' + 'script>',
+      '<script src="cotacoes.js"></' + 'script>' +
+      '\n<script src="dashboard.js"></' + 'script>' +
+      '\n<script src="cotacao-dashboard.js"></' + 'script>' +
+      '\n<script src="recebimento-cotacao.js"></' + 'script>'
+    );
+
+    document.open();
+    document.write(h);
+    document.close();
+
+  } catch (e) {
+
+    document.getElementById('boot').innerHTML =
+      '<b>Não foi possível carregar o Vision.</b><br>' +
+      String(e.message || e);
+
+  }
+})();
+</script>
+
+</body>
+</html>
