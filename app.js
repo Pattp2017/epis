@@ -2102,6 +2102,17 @@ document.getElementById('authLogoutBtn').onclick=async ()=>{
       document.getElementById('authScreen').style.display='flex';
     }
   }else{
-    mostrarLogin();
+    // MODO DE DESENVOLVIMENTO TEMPORÁRIO:
+    // libera a interface sem exigir login. As rotinas que dependem
+    // de empresa/autenticação no Supabase continuam protegidas.
+    document.getElementById('authScreen').style.display='none';
+    document.getElementById('mainApp').classList.remove('auth-hidden');
+    document.getElementById('authUserLabel').textContent='Modo desenvolvimento';
+    const client=document.getElementById('clientName');
+    if(client){
+      client.value='';
+      client.placeholder='Empresa será definida pelo PGRTR';
+    }
+    openPage((location.hash||'#matriz').slice(1),false);
   }
 })();
