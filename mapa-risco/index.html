@@ -48,6 +48,23 @@
       </div>
     </div>
   </section>
+
+  <section class="card hidden" id="riskCard">
+    <div class="step">3</div>
+    <div class="card-content">
+      <h2>Riscos encontrados no PGRTR</h2>
+      <p class="muted">Selecione um ambiente e confira os riscos extraídos. Nesta etapa nada é definitivo: os campos são editáveis.</p>
+      <div class="risk-toolbar">
+        <label for="riskEnvironment">Ambiente</label>
+        <select id="riskEnvironment"></select>
+      </div>
+      <div id="riskList" class="risk-list"></div>
+      <div class="actions">
+        <button class="btn secondary" id="addRiskBtn" type="button">+ Adicionar risco</button>
+        <button class="btn primary" id="saveRisksBtn" type="button">Salvar revisão</button>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
