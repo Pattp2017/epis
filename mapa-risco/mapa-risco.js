@@ -133,28 +133,67 @@ function classifyRisk(text){
   if(/POEIRA|QUIMIC|AGROTOX|DEFENSIV|VAPOR|GAS|FUMO|NEVOA|PRODUTO/.test(t))return 'QUÍMICO';
   if(/BIOLOG|BACTER|VIRUS|FUNGO|PARASIT|ANIMAL|PICADA|MICRORGAN/.test(t))return 'BIOLÓGICO';
   if(/ERGON|POSTURA|REPETIT|PESO|LEVANTAMENTO|ESFORCO|JORNADA|MONOTON/.test(t))return 'ERGONÔMICO';
-  if(/ACIDENT|MECANIC|QUEDA|CHOQUE|ELETRIC|CORTE|PERFU|ATROPEL|MAQUINA|INCEND/.test(t))return 'ACIDENTE';
-  return '';
+  return 'ACIDENTE';
 }
-
-function extractRisksByEnvironment(text,environments){
-  const result={}; environments.forEach(e=>result[e]=[]);
+function mapDegree(level){
+  const t=noAccent(level||'').toUpperCase();
+  if(/ALTO|ELEVADO|CRITIC|INTOLERAVEL|MUITO ALTO/.test(t))return 'GRANDE';
+  if(/BAIXO|TRIVIAL|ACEITAVEL|PEQUENO/.test(t))return 'PEQUENO';
+  return 'MÉDIO';
+}
+function getField(block,startLabel,endLabels){
+  const n=noAccent(block);
+  const ns=noAccent(startLabel);
+  let a=n.toLowerCase().indexOf(ns.toLowerCase());
+  if(a<0)return '';
+  a+=ns.length;
+  while(a<n.length&&/[\s:]/.test(n[a]))a++;
+  let b=n.length;
+  endLabels.forEach(label=>{
+    const p=n.toLowerCase().indexOf(noAccent(label).toLowerCase(),a);
+    if(p>=0&&p<b)b=p;
+  });
+  return clean(block.slice(a,b));
+}
+function extractStructuredBlocks(text){
   const flat=clean(text);
+  const norm=noAccent(flat);
+  const needle='Exposicao:';
+  const positions=[];let pos=0;
+  while((pos=norm.indexOf(needle,pos))>=0){positions.push(pos);pos+=needle.length}
+  const blocks=[];
+  positions.forEach((p,i)=>{
+    const from=Math.max(0,p-220);
+    const to=i+1<positions.length?positions[i+1]:Math.min(flat.length,p+3500);
+    const block=flat.slice(from,to);
+    const source=getField(block,'Perigos, fontes e circunstâncias',
+      ['Metodologia','Medidas administrativas ou de organização do trabalho']);
+    const measure=getField(block,'Medidas administrativas ou de organização do trabalho',
+      ['Descrição do Agente Nocivo','Possíveis danos à saúde','Probabilidade']);
+    const level=getField(block,'Nível de Risco',
+      ['Estimativa','Informação adicional necessária','Questionário EPIs']);
+    if(!source)return;
+    const exposureIndex=noAccent(block).indexOf('Exposicao:');
+    const title=clean(block.slice(0,exposureIndex)).slice(-180);
+    blocks.push({title,source,measure,level});
+  });
+  return blocks;
+}
+function extractRisksByEnvironment(text,environments){
+  const result={};environments.forEach(e=>result[e]=[]);
+  const flat=clean(text),normalized=noAccent(flat).toUpperCase();
   environments.forEach(env=>{
     const key=noAccent(env).toUpperCase();
-    const normalized=noAccent(flat).toUpperCase();
     let pos=0,guard=0;
-    while((pos=normalized.indexOf(key,pos))>=0&&guard++<80){
-      const chunk=flat.slice(Math.max(0,pos-250),Math.min(flat.length,pos+2200));
-      const sentences=chunk.split(/(?=[.;:]\s)|\s{2,}/).map(clean).filter(Boolean);
-      sentences.forEach(s=>{
-        const type=classifyRisk(s);
-        if(!type)return;
-        let source=s.replace(/^.*?(risco|perigo|agente)\s*[:\-]?\s*/i,'').trim();
-        if(source.length<3||source.length>180)return;
-        const signature=noAccent(type+'|'+source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
+    while((pos=normalized.indexOf(key,pos))>=0&&guard++<100){
+      const candidates=environments.map(e=>normalized.indexOf(noAccent(e).toUpperCase(),pos+key.length))
+        .filter(x=>x>pos).sort((a,b)=>a-b);
+      const end=candidates.length?candidates[0]:Math.min(flat.length,pos+18000);
+      extractStructuredBlocks(flat.slice(pos,end)).forEach(b=>{
+        const type=classifyRisk(b.title+' '+b.source);
+        const signature=noAccent(type+'|'+b.source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
         if(!result[env].some(r=>r.signature===signature)){
-          result[env].push({type,source,measure:'',degree:'MÉDIO',signature});
+          result[env].push({type,source:b.source,measure:b.measure,degree:mapDegree(b.level),signature});
         }
       });
       pos+=key.length;
