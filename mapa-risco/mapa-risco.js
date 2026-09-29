@@ -141,10 +141,13 @@ const riskTypes=[
 
 function classifyRisk(text){
   const t=noAccent(text).toUpperCase();
+
+  // Ergonomia vem primeiro para impedir que descrições de tarefas
+  // (puxar/empurrar/manusear cargas etc.) caiam no grupo ACIDENTE.
+  if(/ERGON|POSTURA|REPETIT|PESO|LEVANTAMENTO|ESFORCO|JORNADA|MONOTON|PUXAR|EMPURRAR|CARREGAR|TRANSPORTAR CARG|MOVIMENTO REPET|EXIGENCIA BIOMEC|SOBRECARGA MUSC|TRABALHO EM PE|TRABALHO SENTADO/.test(t))return 'ERGONÔMICO';
   if(/RUIDO|VIBRAC|CALOR|FRIO|RADIAC|UMIDADE|PRESSAO/.test(t))return 'FÍSICO';
-  if(/POEIRA|QUIMIC|AGROTOX|DEFENSIV|VAPOR|GAS|FUMO|NEVOA|PRODUTO/.test(t))return 'QUÍMICO';
-  if(/BIOLOG|BACTER|VIRUS|FUNGO|PARASIT|ANIMAL|PICADA|MICRORGAN/.test(t))return 'BIOLÓGICO';
-  if(/ERGON|POSTURA|REPETIT|PESO|LEVANTAMENTO|ESFORCO|JORNADA|MONOTON/.test(t))return 'ERGONÔMICO';
+  if(/POEIRA|QUIMIC|AGROTOX|DEFENSIV|VAPOR|GAS|FUMO|NEVOA|PRODUTO QUIM|OLEO|GRAXA/.test(t))return 'QUÍMICO';
+  if(/BIOLOG|BACTER|VIRUS|FUNGO|PARASIT|MICRORGAN/.test(t))return 'BIOLÓGICO';
   return 'ACIDENTE';
 }
 function mapDegree(level){
@@ -226,14 +229,29 @@ function extractRisksByEnvironment(text,environments){
     const envKey=noAccent(env).toUpperCase();
     blocks.filter(b=>noAccent(b.pageText).toUpperCase().includes(envKey)).forEach(b=>{
       const g=noAccent(b.group||'').toUpperCase();
-      const type=g.includes('FISIC')?'FÍSICO':
+      const evidence=[b.group,b.riskName,b.source].filter(Boolean).join(' | ');
+
+      // Primeiro respeita um grupo explícito do PGRTR. Porém, quando o texto
+      // descreve claramente uma condição ergonômica, corrige a classificação.
+      // Isso evita casos como "frequente ação de puxar/empurrar" em ACIDENTE.
+      let type=g.includes('FISIC')?'FÍSICO':
         g.includes('QUIMIC')?'QUÍMICO':
         g.includes('BIOLOG')?'BIOLÓGICO':
-        g.includes('ERGON')?'ERGONÔMICO':'ACIDENTE';
+        g.includes('ERGON')?'ERGONÔMICO':
+        g.includes('ACIDENT')||g.includes('MECAN')?'ACIDENTE':
+        classifyRisk(evidence);
+
+      const inferred=classifyRisk([b.riskName,b.source].filter(Boolean).join(' | '));
+      if(inferred==='ERGONÔMICO') type='ERGONÔMICO';
+
+      const tidy=s=>clean(String(s||'').replace(/[■▪▫•□�]+/g,' ').replace(/\s+/g,' '));
+      const groupLabel=tidy(b.group);
+      const riskLabel=tidy(b.riskName);
+      const sourceLabel=tidy(b.source);
       const combinedSource=[
-        b.group?'Grupo: '+b.group:'',
-        'Risco: '+b.riskName,
-        'Fonte geradora: '+b.source
+        groupLabel?'Grupo: '+groupLabel:'',
+        riskLabel?'Risco: '+riskLabel:'',
+        sourceLabel?'Fonte geradora: '+sourceLabel:''
       ].filter(Boolean).join(' | ');
       const signature=noAccent(type+'|'+b.riskName+'|'+b.source).toUpperCase().replace(/[^A-Z0-9|]/g,'');
       if(!result[env].some(r=>r.signature===signature)){
