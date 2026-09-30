@@ -2102,17 +2102,10 @@ document.getElementById('authLogoutBtn').onclick=async ()=>{
       document.getElementById('authScreen').style.display='flex';
     }
   }else{
-    // MODO DE DESENVOLVIMENTO TEMPORÁRIO:
-    // libera a interface sem exigir login. As rotinas que dependem
-    // de empresa/autenticação no Supabase continuam protegidas.
-    document.getElementById('authScreen').style.display='none';
-    document.getElementById('mainApp').classList.remove('auth-hidden');
-    document.getElementById('authUserLabel').textContent='Modo desenvolvimento';
-    const client=document.getElementById('clientName');
-    if(client){
-      client.value='';
-      client.placeholder='Empresa será definida pelo PGRTR';
-    }
-    openPage((location.hash||'#matriz').slice(1),false);
+    // Sem sessão autenticada, mantém o sistema protegido.
+    // A empresa usada pelos módulos sempre deve vir da tabela raiz
+    // "empresas", após a autenticação e a seleção de uma empresa
+    // autorizada em "usuario_empresas".
+    mostrarLogin();
   }
 })();
